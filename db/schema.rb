@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2020_03_27_060031) do
   end
 
   create_table "ratings", force: :cascade do |t|
+    t.integer "amount"
     t.bigint "user_id", null: false
     t.bigint "restaurant_id", null: false
     t.datetime "created_at", precision: 6, null: false
