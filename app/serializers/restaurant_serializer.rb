@@ -18,7 +18,7 @@ class RestaurantSerializer < ActiveModel::Serializer
 
       obj =
       {
-        except: %i[ created_at updated_at bio user_id]
+        except: %i[ created_at updated_at bio user_id zomato_id]
       }
       final_rating = @restaurant.collect do |rest|
          rest.get_rating()
@@ -36,8 +36,8 @@ class RestaurantSerializer < ActiveModel::Serializer
              },only: %i[ id title message]},
            ratings:{
              include:{
-             user: {only: %i[ username id ]}
-             },only: %i[ id amount ]}
+             user: {only: %i[ id ]}
+             },only: %i[ amount ]}
           },
         except: %i[ created_at updated_at]
       }

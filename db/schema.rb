@@ -10,10 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_27_060031) do
+ActiveRecord::Schema.define(version: 2020_04_28_215623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cuisines", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "favorites", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -63,14 +69,23 @@ ActiveRecord::Schema.define(version: 2020_03_27_060031) do
     t.index ["user_id"], name: "index_replies_on_user_id"
   end
 
+  create_table "restaurant_cuisines", force: :cascade do |t|
+    t.bigint "cuisine_id", null: false
+    t.bigint "restaurant_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["cuisine_id"], name: "index_restaurant_cuisines_on_cuisine_id"
+    t.index ["restaurant_id"], name: "index_restaurant_cuisines_on_restaurant_id"
+  end
+
   create_table "restaurants", force: :cascade do |t|
     t.string "name"
     t.text "bio"
     t.string "address"
     t.string "city"
-    t.string "cuisine"
     t.string "zipcode"
     t.string "thumbnail"
+    t.string "zomato_id"
     t.bigint "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -107,6 +122,8 @@ ActiveRecord::Schema.define(version: 2020_03_27_060031) do
   add_foreign_key "ratings", "users"
   add_foreign_key "replies", "reviews"
   add_foreign_key "replies", "users"
+  add_foreign_key "restaurant_cuisines", "cuisines"
+  add_foreign_key "restaurant_cuisines", "restaurants"
   add_foreign_key "restaurants", "users"
   add_foreign_key "reviews", "restaurants"
   add_foreign_key "reviews", "users"

@@ -2,6 +2,8 @@
 Reply.destroy_all
 Rating.destroy_all
 Review.destroy_all
+RestaurantCuisine.destroy_all
+Cuisine.destroy_all
 Favorite.destroy_all
 Ingredient.destroy_all
 MenuItem.destroy_all
@@ -9,16 +11,21 @@ Restaurant.destroy_all
 User.destroy_all
 
 @apikey = "d6e8e880c56079b8402c4e1b689e0cbe"
-@city = "292"
+@api_city = "292"
 
+# =========================================================== Seeder
 
-User.create(username:"Micheal_is_King", first_name: "Micheal", last_name:"Alfred", email:"micheal@gmail.com", password:"password", admin:true)
+# User.create(username:"zomato", first_name: "zomato", last_name:"zomato", email:"zomato@gmail.com", password:"zomato")
+#
+# Cuisine.create(name:"Pizza")
+#
+# Restaurant.create(name: "Hommie Bakery", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", zipcode: "60666", city: "Detroit")
+#
+# Restaurant.first.cuisines << Cuisine.first
+# # Restaurant.create(name: "Da Man's House", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", zipcode: "60666", cuisine: "Fast Food", user: User.first)
+# =========================================================== Seeder
 
-Restaurant.create(name: "Hommie Bakery", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", zipcode: "60666", cuisine: "Fast Food", city: "Detroit")
-
-Restaurant.create(name: "Da Man's House", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", zipcode: "60666", cuisine: "Fast Food", user: User.first)
-
-comments = [
+@comments = [
    "This Movie is pretty good. It was heart warming thought provoking and really made me think deeply about the human condition and what it means to be human. My eyes have never been this opened by a peice of media. I feel truely awakened.",
 
   "Pirates are evil? The Marines are righteous? These terms have always changed throughout the course of history! Kids who have never seen peace and kids who have never seen war have different values! Those who stand at the top determine what's wrong and what's right! This very place is neutral ground! Justice will prevail, you say? But of course it will! Whoever wins this war becomes justice!",
@@ -63,7 +70,7 @@ comments = [
 
   "Do you know why the Hunters are drawn to this Nightmare? Because it sprouted from their very misdeeds. Things that some would rather keep secret. A pitiful tale of petty arrogance, really."
  ]
-titles = [
+@titles = [
    "That restaurant was totally tubular",
    "Thats gonna be a yikes from me",
    "You either yeet or get yeeted",
@@ -83,24 +90,24 @@ titles = [
  ]
 
 # Restaurant.first
-Review.create(title: titles.sample, message: comments.sample , user: User.first, restaurant: Restaurant.first)
+# Review.create(title: titles.sample, message: comments.sample , user: User.first, restaurant: Restaurant.first)
 
-Favorite.create(user: User.first, restaurant: Restaurant.first)
+# =========================================================== Seeder
+# Favorite.create(user: User.first, restaurant: Restaurant.first)
+#
+# # Ingredient.create()
+#   MenuItem.create(name:"BLT", price: 6.50, restaurant: Restaurant.first)
+#
+# Ingredient.create(name:"lettuce", amount:2, measurement:"cups", menu_item: MenuItem.first)
+# Ingredient.create(name:"tomato", amount:2, measurement:"slices", menu_item: MenuItem.first)
+# Ingredient.create(name:"bacon", amount:12, measurement:"pieces", menu_item: MenuItem.first)
+#
+#
+# rating_amounts = (65...100).to_a
+#
+# Rating.create(amount: rating_amounts.sample , user: User.first, restaurant: Restaurant.first)
+# =========================================================== Seeder
 
-# Ingredient.create()
-  MenuItem.create(name:"BLT", price: 6.50, restaurant: Restaurant.first)
-
-Ingredient.create(name:"lettuce", amount:2, measurement:"cups", menu_item: MenuItem.first)
-Ingredient.create(name:"tomato", amount:2, measurement:"slices", menu_item: MenuItem.first)
-Ingredient.create(name:"bacon", amount:12, measurement:"pieces", menu_item: MenuItem.first)
-
-
-Reply.create(message: comments.sample, review: Review.first )
-rating_amounts = (65...100).to_a
-
-Rating.create(amount: rating_amounts.sample , user: User.first, restaurant: Restaurant.first)
-
-# Review.destroy_all
 
 def initial_parse
   # page = 291
@@ -112,7 +119,7 @@ def initial_parse
   # max_pages=201
   # while page <= max_pages do
     # puts "CURRENT PAGE #{page}"
-    restaurant_data = RestClient.get("https://developers.zomato.com/api/v2.1/search?entity_id=#{city}&entity_type=city", {user_key: @apikey})
+    restaurant_data = RestClient.get("https://developers.zomato.com/api/v2.1/search?entity_id=#{@api_city}&entity_type=city&start=2", {user_key: @apikey})
     parsed_restaurant_data = JSON.parse(restaurant_data)['restaurants']
     # puts parsed_restaurant_data
     more_detailed_search(parsed_restaurant_data)
@@ -122,44 +129,53 @@ end
 
 def more_detailed_search(parsed_restaurant_data)
   parsed_restaurant_data.each do |restaurant|
-    id = restaurant['imdbID']
-    data = RestClient.get("http://www.omdbapi.com/?i=#{id}&apikey=#{@apikey}")
-    parsed_data = JSON.parse(data)
+    # id = restaurant['imdbID']
+    # data = RestClient.get("http://www.omdbapi.com/?i=#{id}&apikey=#{@apikey}")
+    movie_data = restaurant["restaurant"]
+    # puts "Here #{["id"]}"
+    # puts movie_data
+    name = movie_data['name']
+    address = movie_data["location"]['address']
+    city = movie_data["location"]['city']
+    zipcode = movie_data["location"]['zipcode']
+    cuisines = movie_data['cuisines']
+    thumbnail = movie_data['thumb']
+    zomato_id = movie_data['id']
 
-    # puts parsed_data
-    title = parsed_data['Title']
-    year = parsed_data['Year']
-    mpaa_rating = parsed_data['Rated']
-    released_date = parsed_data['Released']
-    director = parsed_data['Director']
-    writer = parsed_data['Writer']
-    plot = parsed_data['Plot']
-    language = parsed_data['Language']
-    country = parsed_data['Country']
-    poster_url = parsed_data['Poster']
-    producer = parsed_data['Production']
+    cuisine_list = create_cuisines(cuisines.split(", "))
 
-    genre_list = create_genres(parsed_data['Genre'].split(", "))
-    actor_list=create_actors(parsed_data['Actors'].split(", "))
-
-    created_restaurant = Movie.find_or_create_by(title: title, year: year, mpaa_rating: mpaa_rating, released_date: released_date, director: director, writer: writer, plot: plot, language: language, country: country, poster_url: poster_url, producer: producer)
-
-    created_restaurant.actors << actor_list
-    created_restaurant.genres << genre_list
+    created_restaurant = Restaurant.create(name: name, address: address, city: city, zipcode: zipcode,  thumbnail: thumbnail, zomato_id: zomato_id, user: User.first)
+    #
+    created_restaurant.cuisines << cuisine_list
   end
 end
 
-# def create_actors(actors)
-#   actors.collect do |actor_name|
-#     Actor.find_or_create_by(name: actor_name)
-#   end
-# end
-#
-# def create_genres(genres)
-#   genres.collect do |genre_name|
-#     Genre.find_or_create_by(name: genre_name)
-#   end
-# end
+def create_cuisines(cuisines)
+  cuisines.collect do |cuisine_name|
+    Cuisine.find_or_create_by(name: cuisine_name)
+  end
+end
+
+def seed_restaurants
+  Restaurant.all.each do |restaurant|
+    (2..6).to_a.sample.times do
+      Review.create(title: @titles.sample, message: @comments.sample, user: User.first, restaurant: restaurant)
+    end
+  end
+
+ # Seeding Ratings
+ rating_amounts = (65...100).to_a
+ Restaurant.all.each do |restaurant|
+     Rating.create(amount: rating_amounts.sample , user: User.first, restaurant: restaurant)
+ end
+
+ Review.all.each do |review|
+   (1..3).to_a.sample.times do
+     Reply.create(message: @comments.sample, review: review, user: User.all.sample)
+   end
+ end
+
+end
 
 # Movie.all.each do |restaurant|
 #   actors = restaurant.actors.uniq
@@ -172,3 +188,4 @@ end
 # end
 
 initial_parse
+seed_restaurants
