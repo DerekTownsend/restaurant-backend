@@ -67,9 +67,14 @@ ActiveRecord::Schema.define(version: 2020_03_27_060031) do
     t.string "name"
     t.text "bio"
     t.string "address"
+    t.string "city"
     t.string "cuisine"
+    t.string "zipcode"
+    t.string "thumbnail"
+    t.bigint "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_restaurants_on_user_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -102,6 +107,7 @@ ActiveRecord::Schema.define(version: 2020_03_27_060031) do
   add_foreign_key "ratings", "users"
   add_foreign_key "replies", "reviews"
   add_foreign_key "replies", "users"
+  add_foreign_key "restaurants", "users"
   add_foreign_key "reviews", "restaurants"
   add_foreign_key "reviews", "users"
 end

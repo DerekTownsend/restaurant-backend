@@ -5,12 +5,18 @@ Review.destroy_all
 Favorite.destroy_all
 Ingredient.destroy_all
 MenuItem.destroy_all
-User.destroy_all
 Restaurant.destroy_all
+User.destroy_all
 
-User.create(username:"Micheal_is_King", first_name:"Micheal", last_name:"Alfred", email:"micheal@gmail.com", password:"password", admin:true)
+@apikey = "d6e8e880c56079b8402c4e1b689e0cbe"
+@city = "292"
 
-Restaurant.create(name: "Hommie Bakery", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", cuisine:"Fast Food")
+
+User.create(username:"Micheal_is_King", first_name: "Micheal", last_name:"Alfred", email:"micheal@gmail.com", password:"password", admin:true)
+
+Restaurant.create(name: "Hommie Bakery", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", zipcode: "60666", cuisine: "Fast Food", city: "Detroit")
+
+Restaurant.create(name: "Da Man's House", bio: "The whole world is in our hands. And hommie don't play that stuff. I am the best iteration of this bakery I am alpha and omega.", address: "6789 S Detroit Ave", zipcode: "60666", cuisine: "Fast Food", user: User.first)
 
 comments = [
    "This Movie is pretty good. It was heart warming thought provoking and really made me think deeply about the human condition and what it means to be human. My eyes have never been this opened by a peice of media. I feel truely awakened.",
@@ -58,7 +64,7 @@ comments = [
   "Do you know why the Hunters are drawn to this Nightmare? Because it sprouted from their very misdeeds. Things that some would rather keep secret. A pitiful tale of petty arrogance, really."
  ]
 titles = [
-   "That movie was totally tubular",
+   "That restaurant was totally tubular",
    "Thats gonna be a yikes from me",
    "You either yeet or get yeeted",
    "Bruce Wayne Did nothing wrong",
@@ -95,3 +101,74 @@ rating_amounts = (65...100).to_a
 Rating.create(amount: rating_amounts.sample , user: User.first, restaurant: Restaurant.first)
 
 # Review.destroy_all
+
+def initial_parse
+  # page = 291
+  # term = "restaurant"
+  # restaurant max pages
+  # max_pages=351
+  # term = "dance"
+  # page = 123
+  # max_pages=201
+  # while page <= max_pages do
+    # puts "CURRENT PAGE #{page}"
+    restaurant_data = RestClient.get("https://developers.zomato.com/api/v2.1/search?entity_id=#{city}&entity_type=city", {user_key: @apikey})
+    parsed_restaurant_data = JSON.parse(restaurant_data)['restaurants']
+    # puts parsed_restaurant_data
+    more_detailed_search(parsed_restaurant_data)
+    # page+=1
+  # end
+end
+
+def more_detailed_search(parsed_restaurant_data)
+  parsed_restaurant_data.each do |restaurant|
+    id = restaurant['imdbID']
+    data = RestClient.get("http://www.omdbapi.com/?i=#{id}&apikey=#{@apikey}")
+    parsed_data = JSON.parse(data)
+
+    # puts parsed_data
+    title = parsed_data['Title']
+    year = parsed_data['Year']
+    mpaa_rating = parsed_data['Rated']
+    released_date = parsed_data['Released']
+    director = parsed_data['Director']
+    writer = parsed_data['Writer']
+    plot = parsed_data['Plot']
+    language = parsed_data['Language']
+    country = parsed_data['Country']
+    poster_url = parsed_data['Poster']
+    producer = parsed_data['Production']
+
+    genre_list = create_genres(parsed_data['Genre'].split(", "))
+    actor_list=create_actors(parsed_data['Actors'].split(", "))
+
+    created_restaurant = Movie.find_or_create_by(title: title, year: year, mpaa_rating: mpaa_rating, released_date: released_date, director: director, writer: writer, plot: plot, language: language, country: country, poster_url: poster_url, producer: producer)
+
+    created_restaurant.actors << actor_list
+    created_restaurant.genres << genre_list
+  end
+end
+
+# def create_actors(actors)
+#   actors.collect do |actor_name|
+#     Actor.find_or_create_by(name: actor_name)
+#   end
+# end
+#
+# def create_genres(genres)
+#   genres.collect do |genre_name|
+#     Genre.find_or_create_by(name: genre_name)
+#   end
+# end
+
+# Movie.all.each do |restaurant|
+#   actors = restaurant.actors.uniq
+#   restaurant.actors.destroy_all
+#   restaurant.actors << actors
+# end
+
+# if Movie.all.count == 0
+#   initial_parse
+# end
+
+initial_parse
