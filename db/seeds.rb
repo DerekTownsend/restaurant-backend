@@ -1,14 +1,14 @@
 
-Reply.destroy_all
-Rating.destroy_all
-Review.destroy_all
-RestaurantCuisine.destroy_all
-Cuisine.destroy_all
-Favorite.destroy_all
-Ingredient.destroy_all
-MenuItem.destroy_all
-Restaurant.destroy_all
-User.destroy_all
+# Reply.destroy_all
+# Rating.destroy_all
+# Review.destroy_all
+# RestaurantCuisine.destroy_all
+# Cuisine.destroy_all
+# Favorite.destroy_all
+# Ingredient.destroy_all
+# MenuItem.destroy_all
+# Restaurant.destroy_all
+# User.destroy_all
 
 @apikey = "d6e8e880c56079b8402c4e1b689e0cbe"
 @api_city = "292"
@@ -119,7 +119,7 @@ def initial_parse
   # max_pages=201
   # while page <= max_pages do
     # puts "CURRENT PAGE #{page}"
-    restaurant_data = RestClient.get("https://developers.zomato.com/api/v2.1/search?entity_id=#{@api_city}&entity_type=city&start=2", {user_key: @apikey})
+    restaurant_data = RestClient.get("https://developers.zomato.com/api/v2.1/search?entity_id=#{@api_city}&entity_type=city&start=1", {user_key: @apikey})
     parsed_restaurant_data = JSON.parse(restaurant_data)['restaurants']
     # puts parsed_restaurant_data
     more_detailed_search(parsed_restaurant_data)
