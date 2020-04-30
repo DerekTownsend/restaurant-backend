@@ -1,5 +1,16 @@
 class RestaurantsController < ApplicationController
-  # skip_before_action :authorized, only: [:index]
+  skip_before_action :authorized, only: [:index, :show, :search]
+
+  def create
+    restaurant = Restaurant.create(restaurant_params)
+    render json: RestaurantSerializer.new(restaurant).to_serialized_json
+  end
+
+  def update
+    restaurant = Restaurant.find_by(id: params[:id])
+    restaurant.update_attributes(restaurant_params)
+    render json: RestaurantSerializer.new(restaurant).to_serialized_json
+  end
 
   def index
     page = params["page"]
@@ -42,4 +53,17 @@ class RestaurantsController < ApplicationController
       render json: {restaurants: []}
     end
   end
+
+  def destroy
+    restaurant = Restaurant.find_by(id: params[:id])
+    restaurant.destroy
+    render json: {message: "success"}
+  end
+
+
+  private
+    def restaurant_params
+      params.require(:review).permit(:name, :bio, :address, :city, :zipcode, :thumbnail, :zomato_id)
+    end
+
 end

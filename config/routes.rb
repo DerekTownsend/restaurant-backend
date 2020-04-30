@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :ratings
   resources :replies
   resources :reviews
+  resources :cuisines
   post '/search', to: 'restaurants#search'
   resources :restaurants
 

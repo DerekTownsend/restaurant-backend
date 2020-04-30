@@ -1,5 +1,5 @@
 class RestaurantSerializer < ActiveModel::Serializer
-  attributes :id, :name, :bio, :address, :cuisine, :zipcode
+  attributes :id, :name, :bio, :address, :city, :zipcode, :thumbnail, :zomato_id
 
   def initialize(restaurant_object, total = Restaurant.all.count)
     @restaurant = restaurant_object
@@ -7,12 +7,13 @@ class RestaurantSerializer < ActiveModel::Serializer
   end
 
   def to_serialized_json
-    # puts "ALLL MOVIES #{@restaurant.count}"
+    # puts "ALLL MOVIES #{@restaurant}"
     # puts @restaurant
     # puts "========================"
-    # final_rating = []
+    final_rating = []
 
     if @restaurant.class == Array
+      # puts "=============================================="
       # puts @restaurant.class
       # puts [].class
 
@@ -30,14 +31,21 @@ class RestaurantSerializer < ActiveModel::Serializer
       {
          include:
          {
+           menu_items:{
+           include:{
+           ingredients: {except: %i[ created_at updated_at]}
+           },except: %i[ created_at updated_at]},
            reviews:{
              include:{
              user: {only: %i[ username id ]}
              },only: %i[ id title message]},
+           cuisines:{
+             only: %i[ id name]},
            ratings:{
              include:{
              user: {only: %i[ id ]}
              },only: %i[ amount ]}
+
           },
         except: %i[ created_at updated_at]
       }

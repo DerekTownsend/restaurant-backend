@@ -1,4 +1,6 @@
 class ReviewsController < ApplicationController
+  skip_before_action :authorized, only: [:index]
+
   def index
     reviews = Review.all
     render json: {reviews: reviews}
@@ -22,6 +24,6 @@ class ReviewsController < ApplicationController
   end
   private
   def review_params
-    params.require(:review).permit(:title, :message, :user_id, :movie_id)
+    params.require(:review).permit(:title, :message, :user_id, :restaurant_id)
   end
 end
