@@ -24,9 +24,9 @@ class CuisinesController < ApplicationController
     else
       render json: {restaurants: []}
     end
-    # total: Movie.all.count
+    # total: Restaurant.all.count
 
-    # restaurants = JSON.parse(MovieSerializer.new(restaurants.to_a, restaurants_max).to_serialized_json)["restaurants"]
+    # restaurants = JSON.parse(RestaurantSerializer.new(restaurants.to_a, restaurants_max).to_serialized_json)["restaurants"]
     # p restaurants["restaurants"]
   end
 end

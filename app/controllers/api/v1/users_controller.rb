@@ -27,8 +27,8 @@ class Api::V1::UsersController < ApplicationController
 
     user = current_user
 
-    restaurants_max = user.movie_favorites.count
-    restaurants = user.movie_favorites[starting_page...ending_page]
+    restaurants_max = user.restaurant_favorites.count
+    restaurants = user.restaurant_favorites[starting_page...ending_page]
 
     render json:  RestaurantSerializer.new(restaurants, restaurants_max).to_serialized_json
   end
