@@ -1,5 +1,5 @@
 class CuisinesController < ApplicationController
-  skip_before_action :authorized, only: [:index, :show, :search]
+  # skip_before_action :authorized, only: [:index, :show, :search]
 
   def index
     cuisines = Cuisine.all

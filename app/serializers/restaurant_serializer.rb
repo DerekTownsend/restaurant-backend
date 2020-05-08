@@ -29,31 +29,13 @@ class RestaurantSerializer < ActiveModel::Serializer
 
       obj =
       {
-         include:
-         {
-           menu_items:{
-           include:{
-           ingredients: {except: %i[ created_at updated_at]}
-           },except: %i[ created_at updated_at]},
-           reviews:{
-             include:{
-             user: {only: %i[ username id ]}
-             },only: %i[ id title message]},
-           cuisines:{
-             only: %i[ id name]},
-           ratings:{
-             include:{
-             user: {only: %i[ id ]}
-             },only: %i[ amount ]}
-
-          },
         except: %i[ created_at updated_at]
       }
       final_rating = @restaurant.get_rating()
     end
+# {restaurants: @restaurant, total: @total, final_rating: final_rating}
 
-
-    {restaurants: @restaurant, total: @total, final_rating: final_rating}.to_json(obj)
+    @restaurant.to_json(obj)
   end
 
 end

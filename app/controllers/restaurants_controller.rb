@@ -1,8 +1,9 @@
 class RestaurantsController < ApplicationController
-  skip_before_action :authorized, only: [:index, :show, :search]
+  # skip_before_action :authorized, only: [:index, :show, :search]
 
   def create
     restaurant = Restaurant.create(restaurant_params)
+    puts RestaurantSerializer.new(restaurant).to_serialized_json
     render json: RestaurantSerializer.new(restaurant).to_serialized_json
   end
 
@@ -63,7 +64,7 @@ class RestaurantsController < ApplicationController
 
   private
     def restaurant_params
-      params.require(:review).permit(:name, :bio, :address, :city, :zipcode, :thumbnail, :zomato_id)
+      params.require(:restaurant).permit(:name, :bio, :address, :city, :zipcode, :thumbnail, :zomato_id, :user_id)
     end
 
 end

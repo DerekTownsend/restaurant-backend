@@ -1,5 +1,5 @@
 class ReviewsController < ApplicationController
-  skip_before_action :authorized, only: [:index]
+  # skip_before_action :authorized, only: [:index, :create]
 
   def index
     reviews = Review.all
@@ -7,7 +7,9 @@ class ReviewsController < ApplicationController
   end
 
   def create
+    puts "HEEEEEEEEEEERRRRRRRRREEEEEEEEEEEEEEE"
     review = Review.create(review_params)
+    puts ReviewSerializer.new(review).to_serialized_json
     render json: ReviewSerializer.new(review).to_serialized_json
   end
 

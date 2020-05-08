@@ -1,7 +1,8 @@
 class RatingsController < ApplicationController
+
   def create
     rating = Rating.create(rating_params)
-    render json: RestaurantSerializer.new(rating.restaurant).to_serialized_json
+    render json: RatingSerializer.new(rating).to_serialized_json
   end
 
   def update
